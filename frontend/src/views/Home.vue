@@ -3,7 +3,7 @@ import { getUsers, deleteUser } from "../api/users/user_service";
 import Table from "../components/layout/Table.vue";
 import Header from "../components/header/Header.vue";
 import PopUp from "../components/notice/PopUp.vue";
-import UserDeletionFeedback from "../components/notice/UserDeletionFeedback.vue";
+import UserDeletionFeedback from "../components/notice/UserdeletionFeedback.vue";
 
 export default {
   name: "Home",
@@ -16,6 +16,7 @@ export default {
         active: false,
         success: false,
       },
+      isLoading: true,
     };
   },
   components: {
@@ -30,9 +31,11 @@ export default {
         if (response.data) {
           this.userData = response.data.users;
         }
+        this.isLoading = false;
       })
       .catch((error) => {
         console.error(error);
+        this.isLoading = false;
       });
   },
   methods: {
@@ -72,7 +75,8 @@ export default {
     @childeDeletePop="isDeletePopHidden"
     @childeUserDelete="userDelete"
   ></PopUp>
-  <div class="wrap">
+  <div class="loader" v-show="isLoading">Loading...</div>
+  <div class="wrap" v-show="!isLoading">
     <UserDeletionFeedback :notice="notice"></UserDeletionFeedback>
     <Table
       :thead="['ID', '名前', '年齢', '住所', '電話番号', '']"
