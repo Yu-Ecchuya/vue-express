@@ -5,7 +5,8 @@
     :error="notification.error"
   ></Notification>
   <Header></Header>
-  <div class="wrap">
+  <div class="loader" v-show="isLoading">Loading...</div>
+  <div class="wrap" v-show="!isLoading">
     <section class="form" v-if="userData.length !== 0">
       <h3>
         {{ userData.name }}
@@ -86,6 +87,7 @@ export default {
           hidden: false,
         },
       ],
+      isLoading: true,
     };
   },
   components: {
@@ -106,9 +108,11 @@ export default {
         Object.values(data).map((value, index) => {
           this.item[index]["value"] = value;
         });
+        this.isLoading = false;
       })
       .catch((err) => {
         console.error(err);
+        this.isLoading = false;
 
         setTimeout(() => {
           this.$router.push("/");

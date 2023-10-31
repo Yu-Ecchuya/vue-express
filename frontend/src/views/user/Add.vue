@@ -18,6 +18,15 @@
             :hidden="items.hidden"
           ></Input>
         </div>
+        <ul class="uploadList">
+          <li class="uploadList__item" v-for="(value, key) in uploads">
+            <span>{{ value }}: </span>
+            <InputImage
+              :id="key"
+              @childImageFile="parentImageFile"
+            ></InputImage>
+          </li>
+        </ul>
         <Submit :btnLabel="'送信'" @childClick="create()"></Submit>
       </form>
     </section>
@@ -28,6 +37,7 @@
 import { createUser } from "../../api/users/user_service";
 import Input from "../../components/form/Input.vue";
 import Submit from "../../components/form/Submit.vue";
+import InputImage from "../../components/form/InputImage.vue";
 import Notification from "../../components/form/Notification.vue";
 import Header from "../../components/header/Header.vue";
 
@@ -70,6 +80,8 @@ export default {
           hidden: false,
         },
       ],
+      files: [],
+      uploads: { file1: "画像1", file2: "画像2", file3: "画像3" },
     };
   },
   components: {
@@ -77,6 +89,7 @@ export default {
     Submit,
     Notification,
     Header,
+    InputImage,
   },
   methods: {
     create() {
@@ -119,6 +132,18 @@ export default {
     popUp(action) {
       this.notification.isActive = action;
     },
+    parentImageFile(file, id) {
+      // 同じキーの存在を確認
+      const index = this.files.findIndex((item) => Object.keys(item)[0] === id);
+
+      if (index === -1) {
+        // 新規追加
+        this.files.push({ [id]: file });
+      } else {
+        // 既存のキーを上書き
+        this.files[index][id] = file;
+      }
+    },
   },
 };
 </script>
@@ -126,5 +151,14 @@ export default {
 <style lang="scss" scoped>
 .form {
   margin: 50px 0 0;
+}
+.uploadList {
+  margin-bottom: 30px;
+  &__item {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>
